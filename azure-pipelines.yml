@@ -20,3 +20,11 @@ steps:
     npm install
     ng build --prod
   displayName: 'npm install and build'
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Бесплатная пробная версия(1)(2ef8fb7f-acea-43e5-be3a-444214fd0329)'
+    appType: 'webApp'
+    WebAppName: 'meditations-ai'
+    packageForLinux: 'dist/'
