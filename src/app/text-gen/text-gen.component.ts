@@ -17,9 +17,9 @@ export class TextGenComponent implements OnInit {
   inputTensor: tf.Tensor;
 
   async ngOnInit() {
-    this.model = await tf.loadLayersModel('../assets/models/model.json');  // load model
+    this.model = await tf.loadLayersModel('./assets/models/model.json');  // load model
     // also load the character to index mappings
-    this.char2idx = await $.getJSON('../assets/models/char2idx.json', function(json) {
+    this.char2idx = await $.getJSON('./assets/models/char2idx.json', function(json) {
       return json.responseJSON
     });
     // execute function to get idx2char array
