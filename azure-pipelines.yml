@@ -27,4 +27,4 @@ steps:
     azureSubscription: 'Бесплатная пробная версия(1)(2ef8fb7f-acea-43e5-be3a-444214fd0329)'
     appType: 'webApp'
     WebAppName: 'meditations-ai'
-    packageForLinux: 'dist/'
+    packageForLinux: 'dist/nlg-project'
