@@ -22,8 +22,7 @@
             "assets": [
               "src/favicon.ico",
               "src/model.json",
-              "src/char2idx.json",
-              "src/web.config"
+              "src/char2idx.json"
             ],
             "styles": [
               "src/styles.css"
