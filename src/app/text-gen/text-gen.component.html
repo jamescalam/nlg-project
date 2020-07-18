@@ -1,19 +1,21 @@
 <br/>
 
-<div class="container">
+<div class="container-fluid">
   <div class="row">
 
     <!-- Input half of UI -->
-    <div class="col">
+    <div class="col-2">
       <div class="form-group">
         <label for="nlgInputArea">Begin with some words</label>
-        <textarea #meditationInput [value]="text" class="form-control" id="nlgInputArea" rows="10"></textarea>
+        <textarea #meditationInput class="form-control" id="nlgInputArea" rows="10">Hey Marco</textarea>
+        <mat-progress-bar [mode]="progress" value="0"></mat-progress-bar>
       </div>
-      <button type="button" class="btn btn-light" (click)="generate(meditationInput.value)">Meditate</button>
+      <button type="button" class="mat-flat-button" (click)="run(meditationInput.value)">Meditate</button>
+      <mat-icon>refresh</mat-icon>
     </div>
 
     <!-- Output half of UI -->
-    <div class="col-2">
+    <div class="col">
         <p class="lead">{{text}}</p>
     </div>
   </div>

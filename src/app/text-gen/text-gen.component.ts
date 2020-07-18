@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import * as $ from 'jquery'
 
+
 @Component({
   selector: 'app-text-gen',
   templateUrl: './text-gen.component.html',
@@ -14,7 +15,9 @@ export class TextGenComponent implements OnInit {
   char2idx: object;
   idx2char: string[];
   text: string = "Hey Marco ";
+  texts: string[];
   inputTensor: tf.Tensor;
+  progress: string = "determinate";
 
   async ngOnInit() {
     this.model = await tf.loadLayersModel('model.json');  // load model
@@ -26,7 +29,7 @@ export class TextGenComponent implements OnInit {
     this.idx2char = await convertIdx(this.char2idx);
   };
 
-  generate(text) {
+  generate(text: string) {
     // check if the user has changed the text and if so reset model state
     if (this.text != text) this.model.resetStates();
     this.text = text;  // update class text
@@ -36,6 +39,7 @@ export class TextGenComponent implements OnInit {
     let yTypeArray: Iterable<unknown>;
     let yArray: object;
     let yIdx: number;
+    let textPreds: string = "";
 
     // converting start string to numbers (vectorisation/embedding)
     const idxArray = getNum(this.char2idx, text);
@@ -59,9 +63,17 @@ export class TextGenComponent implements OnInit {
 
       if (i >= text.length - 1) {
         // append prediction as input to next iteration
-        this.text = this.text.concat(this.idx2char[yIdx]);
+        textPreds = textPreds.concat(this.idx2char[yIdx]);
       };
     };
+    return textPreds;
+  };
+
+  async run(text: string) {
+    // first we set our progress bar to indeterminate (eg start moving)
+    this.progress = "indeterminate";
+    // now generate text
+    this.text = await this.generate(text);
   };
 };
 
