@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import * as $ from 'jquery'
 
@@ -12,12 +12,11 @@ export class TextGenComponent implements OnInit {
 
   // initialize key objects
   model;
-  char2idx: object;
+  char2idx;
   idx2char: string[];
-  text: string = "Hey Marco ";
-  texts: string[];
+  genText: Array<[string, string]> | undefined;
   inputTensor: tf.Tensor;
-  progress: string = "determinate";
+  inputText = "Hey Marco ";
 
   async ngOnInit() {
     this.model = await tf.loadLayersModel('model.json');  // load model
@@ -29,23 +28,41 @@ export class TextGenComponent implements OnInit {
     this.idx2char = await convertIdx(this.char2idx);
   };
 
+  reset() {
+    this.genText = undefined;
+    this.model.resetStates();
+    this.inputText = "";
+  };
+
   generate(text: string) {
     // check if the user has changed the text and if so reset model state
-    if (this.text != text) this.model.resetStates();
-    this.text = text;  // update class text
-    text = (text.length > 100) ? (text.slice(text.length-100, text.length)) : (text);  // slice long text
+    //if (this.text != text) this.model.resetStates();
+    //this.text = text;
+    // update class text
+    if (text.length != 0) {
+      if (this.genText === undefined) {
+        this.genText = [[text, "user"]];
+      } else {;
+        this.genText.push([text, "user"]);
+      };
+    };
+    // remove text from input area
+    this.inputText = "";
+    // slice long text
+    text = (text.length > 100) ? (text.slice(text.length-100, text.length)) : (text);
 
     let y_hat: tf.Tensor  // initialize variables we will be using
     let yTypeArray: Iterable<unknown>;
     let yArray: object;
     let yIdx: number;
     let textPreds: string = "";
+    let newChar: string = "";
 
     // converting start string to numbers (vectorisation/embedding)
     const idxArray = getNum(this.char2idx, text);
 
     // iterate through producing 100 predictions (characters)
-    for (let i = 0; i < text.length + 100; i++) {
+    for (let i = 0; (i < text.length + 100 || newChar != "."); i++) {
       if (i < text.length) {
         // for the length of the text, we are just passing the user input
         this.inputTensor = tf.expandDims([idxArray[i]], 0);  // convert array to compatible tensor
@@ -63,17 +80,13 @@ export class TextGenComponent implements OnInit {
 
       if (i >= text.length - 1) {
         // append prediction as input to next iteration
-        textPreds = textPreds.concat(this.idx2char[yIdx]);
+        newChar = this.idx2char[yIdx]
+        textPreds = textPreds.concat(newChar);
       };
     };
-    return textPreds;
-  };
-
-  async run(text: string) {
-    // first we set our progress bar to indeterminate (eg start moving)
-    this.progress = "indeterminate";
-    // now generate text
-    this.text = await this.generate(text);
+    textPreds = textPreds.replace("\n", "\n\n");
+    textPreds = textPreds.replace("  ", " ");
+    this.genText.push([textPreds, "ai"]);
   };
 };
 
